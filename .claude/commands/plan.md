@@ -23,6 +23,7 @@ rules the plan must follow:
 - `.claude/skills/api-conventions/SKILL.md`
 - `.claude/skills/service-patterns/SKILL.md`
 - `.claude/skills/testing-patterns/SKILL.md`
+- `.claude/skills/data-modeling/SKILL.md`
 
 Create a file at `plans/<feature_name>.md` with the following structure:
 
@@ -74,6 +75,26 @@ Coordinates the new user onboarding workflow.
 For every Pydantic model being created in data_definitions/:
 - Model name, all fields with types and descriptions
 - Note which endpoints use each schema (request vs response)
+- Identify shared fields and propose Base models where 2+ schemas overlap
+- File location: `data_definitions/<domain>.py`
+
+Example:
+### data_definitions/onboarding.py
+
+**OnboardingBase** (base model for shared fields)
+- `email: str` — User's email address
+- `name: str` — User's display name
+
+**OnboardingRequest(OnboardingBase)** — used by POST /onboarding/start
+- *(inherits email, name from base)*
+
+**OnboardingResponse(OnboardingBase)** — returned by POST /onboarding/start
+- `user_id: str` — Created user's unique identifier
+- `workspace_created: bool` — Whether the workspace was provisioned
+- `created_at: datetime` — Timestamp of account creation
+
+**OnboardingStatus(StrEnum)**
+- `pending` / `in_progress` / `completed` / `failed`
 
 ## API Endpoints
 
